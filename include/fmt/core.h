@@ -436,13 +436,14 @@ class container_buffer : public basic_buffer<typename Container::value_type> {
 
  protected:
   void grow(std::size_t capacity) FMT_OVERRIDE {
-    container_.resize(capacity);
-    this->set(&container_[0], capacity);
+    auto offset = container_.size() - this->size();
+    container_.resize(capacity + offset);
+    this->set(&container_[0] + offset, capacity);
   }
 
  public:
   explicit container_buffer(Container &c)
-    : basic_buffer<typename Container::value_type>(&c[0], c.size(), c.size()),
+    : basic_buffer<typename Container::value_type>(&c[0] + c.size(), 0, 0),
       container_(c) {}
 };
 
